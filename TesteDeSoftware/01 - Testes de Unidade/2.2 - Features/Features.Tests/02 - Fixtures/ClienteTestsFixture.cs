@@ -37,6 +37,7 @@ namespace Features.Tests
 
         public Cliente GerarClienteInvalido()
         {
+            //teste
             var genero = new Faker().PickRandom<Name.Gender>();
 
             var cliente = new Faker<Cliente>("pt_BR")
