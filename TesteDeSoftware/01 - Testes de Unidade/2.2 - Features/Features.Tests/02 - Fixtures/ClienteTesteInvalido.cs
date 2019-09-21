@@ -1,6 +1,4 @@
-﻿using System;
-using Features.Clientes;
-using Xunit;
+﻿using Xunit;
 
 namespace Features.Tests
 {
@@ -13,7 +11,6 @@ namespace Features.Tests
         {
             _clienteTestsFixture = clienteTestsFixture;
         }
-
 
         [Fact(DisplayName = "Novo cliente inválido")]
         [Trait("Categoria", "Cliente Fixtures Testes")]
