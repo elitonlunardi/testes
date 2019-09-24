@@ -4,6 +4,8 @@ using Features.Clientes;
 using MediatR;
 using Moq;
 using Xunit;
+using FluentAssertions;
+using FluentValidation;
 
 namespace Features.Tests
 {
@@ -31,7 +33,7 @@ namespace Features.Tests
             _clienteService.Adicionar(cliente);
 
             //Assert
-            Assert.True(cliente.EhValido());
+            cliente.EhValido().Should().BeTrue();
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(rep => rep.Adicionar(cliente), Times.Once);
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>().Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
         }
@@ -48,7 +50,7 @@ namespace Features.Tests
             _clienteService.Adicionar(cliente);
 
             //Assert
-            Assert.False(cliente.EhValido());
+            cliente.EhValido().Should().BeFalse();
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(rep => rep.Adicionar(cliente), Times.Never);
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>().Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
         }
@@ -58,16 +60,20 @@ namespace Features.Tests
         public void ClienteService_ObterTodosAtivos_DeveRetornarApenasAtivos()
         {
             // Arrange
-            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Setup(c => c.ObterTodos())
+            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>()
+                .Setup(c => c.ObterTodos())
                 .Returns(_clienteTestsAutoMockerFixture.ObterClientesVariados());
 
             // Act
             var clientes = _clienteService.ObterTodosAtivos();
 
             // Assert 
+            //Assert.True(clientes.Any());
+            //Assert.False(clientes.Count(c => !c.Ativo) > 0);
+            clientes.Should().HaveCountGreaterOrEqualTo(1, "É preciso ter um cliente");
+            clientes.Count(c => !c.Ativo).Should().BeGreaterOrEqualTo(0, "É preciso ter ao menos um cliente, todos ativos");
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(r => r.ObterTodos(), Times.Once);
-            Assert.True(clientes.Any());
-            Assert.False(clientes.Count(c => !c.Ativo) > 0);
+            
         }
     }
 }
