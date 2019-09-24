@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using Features.Clientes;
 using MediatR;
 using Moq;
@@ -54,6 +55,28 @@ namespace Features.Tests
             Assert.False(cliente.EhValido());
             clienteRepo.Verify(rep => rep.Adicionar(cliente), Times.Never);
             mediatr.Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
+        }
+
+        [Fact(DisplayName = "Obter todos clientes ativos")]
+        [Trait("Categoria","Cliente Service Mock Tests")]
+        public void ClienteService_ObterTodosAtivos_DeveRetornarApenasAtivos()
+        {
+            // Arrange
+            var clienteRepo = new Mock<IClienteRepository>();
+            var mediatr = new Mock<IMediator>();
+
+            clienteRepo.Setup(c => c.ObterTodos())
+                .Returns(_clienteTestsFixture.ObterClientesVariados());
+
+            var clienteService = new ClienteService(clienteRepo.Object, mediatr.Object);
+
+            // Act
+            var clientes = clienteService.ObterTodosAtivos();
+
+            // Assert 
+            clienteRepo.Verify(r => r.ObterTodos(), Times.Once);
+            Assert.True(clientes.Any());
+            Assert.False(clientes.Count(c => !c.Ativo) > 0);
         }
     }
 }
