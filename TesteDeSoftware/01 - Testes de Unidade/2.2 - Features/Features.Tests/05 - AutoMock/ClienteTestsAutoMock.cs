@@ -5,7 +5,6 @@ using MediatR;
 using Moq;
 using Xunit;
 using FluentAssertions;
-using FluentValidation;
 
 namespace Features.Tests
 {
@@ -33,9 +32,12 @@ namespace Features.Tests
             _clienteService.Adicionar(cliente);
 
             //Assert
-            cliente.EhValido().Should().BeTrue();
-            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(rep => rep.Adicionar(cliente), Times.Once);
-            _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>().Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
+            cliente.EhValido()
+                .Should().BeTrue();
+            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>()
+                .Verify(rep => rep.Adicionar(cliente), Times.Once);
+            _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>()
+                .Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
         }
 
 
@@ -51,8 +53,10 @@ namespace Features.Tests
 
             //Assert
             cliente.EhValido().Should().BeFalse();
-            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(rep => rep.Adicionar(cliente), Times.Never);
-            _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>().Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
+            _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>()
+                .Verify(rep => rep.Adicionar(cliente), Times.Never);
+            _clienteTestsAutoMockerFixture.Mocker.GetMock<IMediator>()
+                .Verify(med => med.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
         }
 
         [Fact(DisplayName = "Obter todos clientes ativos")]
@@ -70,8 +74,10 @@ namespace Features.Tests
             // Assert 
             //Assert.True(clientes.Any());
             //Assert.False(clientes.Count(c => !c.Ativo) > 0);
-            clientes.Should().HaveCountGreaterOrEqualTo(1, "É preciso ter um cliente");
-            clientes.Count(c => !c.Ativo).Should().BeGreaterOrEqualTo(0, "É preciso ter ao menos um cliente, todos ativos");
+            clientes
+                .Should().HaveCountGreaterOrEqualTo(1, "É preciso ter um cliente");
+            clientes.Count(c => !c.Ativo)
+                .Should().BeGreaterOrEqualTo(0, "É preciso ter ao menos um cliente, todos ativos");
             _clienteTestsAutoMockerFixture.Mocker.GetMock<IClienteRepository>().Verify(r => r.ObterTodos(), Times.Once);
             
         }
